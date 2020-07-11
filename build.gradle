@@ -1,0 +1,62 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.1.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+}
+
+def sparkVersion = "2.4.4"
+def scalaVersion = "2.11"
+
+group = 'com.learning.spark'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+//   Spark related dependencies
+	runtimeOnly "org.apache.spark:spark-core_$scalaVersion:$sparkVersion"
+	implementation "org.apache.spark:spark-sql_$scalaVersion:$sparkVersion"
+	implementation "org.apache.spark:spark-streaming-kafka-0-10_$scalaVersion:$sparkVersion"
+	runtimeOnly "org.apache.spark:spark-streaming_$scalaVersion:$sparkVersion"
+	runtimeOnly "org.apache.spark:spark-sql-kafka-0-10_$scalaVersion:$sparkVersion"
+	// https://mvnrepository.com/artifact/org.codehaus.janino/janino
+	compile group: 'org.codehaus.janino', name: 'janino', version: '3.0.8'
+
+	// https://mvnrepository.com/artifact/org.codehaus.janino/commons-compiler
+	compile group: 'org.codehaus.janino', name: 'commons-compiler', version: '3.0.8'
+
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.3.1.RELEASE'
+
+
+	//  Do not upgrade to newer due to spark built with hadoop 2.7
+	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.6.7'
+	implementation(group: 'org.apache.hadoop', name: 'hadoop-aws', version: '2.7.5') {
+		exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+	}
+	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.11'
+	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
+	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
+
+	implementation 'org.apache.kafka:kafka-streams'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
