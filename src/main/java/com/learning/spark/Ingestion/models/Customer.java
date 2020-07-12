@@ -43,5 +43,6 @@ public class Customer implements Serializable {
     private String addresseeLine1;
     private String addresseeLine2;
     private String addresseeLine3;
+    private String brandName;
 
 }

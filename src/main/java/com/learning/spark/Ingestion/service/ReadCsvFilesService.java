@@ -11,6 +11,9 @@ import com.learning.spark.Ingestion.models.Communication;
 import com.learning.spark.Ingestion.models.Customer;
 import com.learning.spark.Ingestion.models.Preference;
 import com.learning.spark.Ingestion.models.kafka.KafkaModel;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.parquet.Strings;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
@@ -48,8 +51,25 @@ public class ReadCsvFilesService implements Serializable {
 
     private void setCustomerFields(Row row, Customer customer) {
         customer.setFirstName(row.getAs("USER_FIRST_NM").toString());
+
+        RandomStringUtils.randomAlphanumeric(10);
         customer.setSalutation(row.getAs("USER_NAME_TITLE").toString());
         customer.setLastName(row.getAs("USER_LAST_NM").toString());
+
+        if (Objects.nonNull(row.getAs("REGISTRATION_ID").toString())) {
+            int maxLengthOfExternalRefId = 10;
+            int lengthOfRegId = row.getAs("REGISTRATION_ID").toString().length();
+            String randomAlphanumeric = RandomStringUtils.randomAlphanumeric(maxLengthOfExternalRefId - lengthOfRegId);
+            String registration_id = row.getAs("REGISTRATION_ID").toString();
+            customer.setExternalRefId(registration_id.concat(randomAlphanumeric));
+        } else
+            customer.setExternalRefId(RandomStringUtils.randomAlphanumeric(10));
+        customer.setAddresseeLine1(row.getAs("USER_FIRST_NM").toString().concat(" ").concat(row.getAs("USER_LAST_NM").toString()));
+        customer.setBrandName("RBS_IN");
+        String registration_id = row.getAs("REGISTRATION_ID").toString();
+        int length = registration_id.length();
+
+
         if (Objects.nonNull(row.getAs("USER_GENDER_CD").toString())) {
             if (row.getAs("USER_GENDER_CD").toString().equals("M"))
                 customer.setGender(Gender.MALE);

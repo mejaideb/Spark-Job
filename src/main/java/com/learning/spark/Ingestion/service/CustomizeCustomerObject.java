@@ -1,5 +1,7 @@
 package com.learning.spark.Ingestion.service;
 
+import com.learning.spark.Ingestion.constants.AddressType;
+import com.learning.spark.Ingestion.constants.CommunicationSubType;
 import com.learning.spark.Ingestion.constants.CommunicationType;
 import com.learning.spark.Ingestion.models.Address;
 import com.learning.spark.Ingestion.models.Communication;
@@ -10,12 +12,10 @@ import org.apache.spark.sql.Row;
 import java.util.*;
 
 public class CustomizeCustomerObject {
-    public static Customer getCustomerObject(Row row) {
-        return null;
-    }
 
     public static void setAttributes(Row row, Customer customer, Map<String, Object> attributes) {
         attributes.put("registrationId", row.getAs("REGISTRATION_ID").toString());
+        attributes.put("primaryEmail",row.getAs("USER_EMAIL_ADDR").toString());
         attributes.put("idFromSource", row.getAs("MSISDN").toString());
         attributes.put("userAccountCD", row.getAs("USER_ACCOUNT_CD").toString());
         attributes.put("userSourceContactID", row.getAs("USER_SRC_CONTACT_ID").toString());
@@ -108,6 +108,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("USER_EMAIL_ADDR").toString())) {
             Communication communication = new Communication();
             communication.setCommunicationValue(row.getAs("USER_EMAIL_ADDR").toString());
+            communication.setCommunicationSubType(CommunicationSubType.CLIENT);
             communication.setCommunicationType(CommunicationType.EMAIL);
             communicationArrayList.add(communication);
 
@@ -115,6 +116,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("USER_ACCOUNT_CD").toString())) {
             Communication communication = new Communication();
             communication.setCommunicationValue(row.getAs("USER_ACCOUNT_CD").toString());
+            communication.setCommunicationSubType(CommunicationSubType.CLIENT);
             communication.setCommunicationType(CommunicationType.MOBILE);
             communicationArrayList.add(communication);
         }
@@ -128,6 +130,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("USER_POSTCODE").toString())) {
             address.setPostalCode(row.getAs("USER_POSTCODE").toString());
             address.setCountry(row.getAs("USER_COUNTRY").toString());
+            address.setType(AddressType.HOME);
         }
         addressSet.add(address);
 
@@ -140,17 +143,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("USER_PERM_PREF_EMAIL").toString())) {
             Preference preference = new Preference();
             preference.setPreferenceType("email");
-            if (row.getAs("USER_PERM_PREF_EMAIL").toString().equals("Y"))
-                preference.setHasOpted(true);
-            else
-                preference.setHasOpted(false);
-            preferenceArrayList.add(preference);
-        }
-
-
-        if (Objects.nonNull(row.getAs("USER_PERM_PREF_EMAIL").toString())) {
-            Preference preference = new Preference();
-            preference.setPreferenceType("email");
+            preference.setValue(row.getAs("USER_EMAIL_ADDR").toString());
             if (row.getAs("USER_PERM_PREF_EMAIL").toString().equals("Y"))
                 preference.setHasOpted(true);
             else
@@ -161,6 +154,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("SERVICE_PERM_PREF_SMS").toString())) {
             Preference preference = new Preference();
             preference.setPreferenceType("sms");
+            preference.setValue(row.getAs("USER_EMAIL_ADDR").toString());
             if (row.getAs("SERVICE_PERM_PREF_SMS").toString().equals("Y"))
                 preference.setHasOpted(true);
             else
@@ -171,6 +165,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("SERVICE_PERM_PREF_CALL").toString())) {
             Preference preference = new Preference();
             preference.setPreferenceType("call");
+            preference.setValue(row.getAs("USER_EMAIL_ADDR").toString());
             if (row.getAs("SERVICE_PERM_PREF_CALL").toString().equals("Y"))
                 preference.setHasOpted(true);
             else
@@ -181,6 +176,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("SERVICE_PERM_PREF_MMS").toString())) {
             Preference preference = new Preference();
             preference.setPreferenceType("mms");
+            preference.setValue(row.getAs("USER_EMAIL_ADDR").toString());
             if (row.getAs("SERVICE_PERM_PREF_MMS").toString().equals("Y"))
                 preference.setHasOpted(true);
             else
@@ -191,6 +187,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("USER_PERM_PREF_SURVEY").toString())) {
             Preference preference = new Preference();
             preference.setPreferenceType("survey");
+            preference.setValue(row.getAs("USER_EMAIL_ADDR").toString());
             if (row.getAs("USER_PERM_PREF_SURVEY").toString().equals("Y"))
                 preference.setHasOpted(true);
             else
@@ -201,6 +198,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("SERVICE_PERM_PREF_LOCATION").toString())) {
             Preference preference = new Preference();
             preference.setPreferenceType("location");
+            preference.setValue(row.getAs("USER_EMAIL_ADDR").toString());
             if (row.getAs("SERVICE_PERM_PREF_LOCATION").toString().equals("Y"))
                 preference.setHasOpted(true);
             else
@@ -211,6 +209,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("SERVICE_PERM_PREF_BASIC_PROF").toString())) {
             Preference preference = new Preference();
             preference.setPreferenceType("profile");
+            preference.setValue(row.getAs("USER_EMAIL_ADDR").toString());
             if (row.getAs("SERVICE_PERM_PREF_BASIC_PROF").toString().equals("Y"))
                 preference.setHasOpted(true);
             else
@@ -221,6 +220,7 @@ public class CustomizeCustomerObject {
         if (Objects.nonNull(row.getAs("SERVICE_PERM_PREF_TRAFFIC").toString())) {
             Preference preference = new Preference();
             preference.setPreferenceType("traffic");
+            preference.setValue(row.getAs("USER_EMAIL_ADDR").toString());
             if (row.getAs("SERVICE_PERM_PREF_TRAFFIC").toString().equals("Y"))
                 preference.setHasOpted(true);
             else
